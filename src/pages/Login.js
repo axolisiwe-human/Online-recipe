@@ -1,7 +1,8 @@
 // src/components/Login.js
 
+import axios from 'axios';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -44,29 +45,89 @@ const Button = styled.button`
 `;
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle login logic here
+    const [existingUser, setExistingUser] = useState({
+        email:'',
+        password:''
+      });
+
+      const [error, setError] = useState({})
+      const [valid, setValid] = useState(true)
+      const navigate = useNavigate()
+    
+      const handleSubmit = (e) => {
+        e.preventDefault();
+       
+        let isValid = true
+        let validationErrors = {}
+    
+        if(existingUser.username === '' || existingUser.username === null){
+            isValid = false
+            validationErrors.username = 'Username is required'
+        }
+        else if(existingUser.email === '' || existingUser.email === null){
+            isValid = false
+            validationErrors.username = 'Email is required'
+        }
+        else if(!/\S+@\S+\.\S+/.test(existingUser.email)){
+            isValid = false
+            validationErrors.username = 'Email is invalid'
+        }
+        else if(existingUser.password === '' || existingUser.password === null){
+            isValid = false
+            validationErrors.username = 'Password is required'
+        }
+        else if(existingUser.password.length < 6){
+            isValid = false
+            validationErrors.username = 'Password has less than 6 characters'
+        }
+        else if(existingUser.password !== existingUser.confirmPassword){
+            isValid = false
+            validationErrors.username = 'Passwords do not match'
+        }
+            
+        axios.get('http://localhost:5000/users')
+        .then(result => {
+           result.data.map(user => {
+            if(user.email === existingUser.email){
+                if(user.password === existingUser.password){
+                    alert('Login Successful')
+                    navigate('/home')
+                }
+                else{
+                    isValid = false
+                    validationErrors.username = 'Invalid Password'
+                }
+            }
+           })
+           setError(validationErrors)
+           setValid(isValid)
+        })
+        .catch(err => console.log(err))
+        
   };
 
   return (
     <Container>
       <Form onSubmit={handleSubmit}>
         <h2>Login</h2>
+        {
+            valid ? <></> :
+            <span className='text-error'>
+                {error.username}, {error.email}, {error.password}
+            </span>
+        }
         <Input
           type="email"
           placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={existingUser.email}
+          onChange={(e) => setExistingUser({...existingUser, email: e.target.value})}
         />
         <Input
           type="password"
           placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={existingUser.password}
+          onChange={(e) => setExistingUser({...existingUser, password: e.target.value})}
         />
         <Button type="submit">Login</Button>
         <p>

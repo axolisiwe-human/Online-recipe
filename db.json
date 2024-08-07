@@ -1,0 +1,25 @@
+{
+  "users": [
+    {
+      "id": "2856",
+      "username": "axole",
+      "email": "axole@gmail.com",
+      "password": "12345678",
+      "confirmPassword": "12345678"
+    },
+    {
+      "id": "b522",
+      "username": "axole2",
+      "email": "axole2@gmail.com",
+      "password": "12345678",
+      "confirmPassword": "12345678"
+    },
+    {
+      "id": "d82c",
+      "username": "axole3",
+      "email": "axole3@gmail.com",
+      "password": "12345678",
+      "confirmPassword": "12345678"
+    }
+  ]
+}
